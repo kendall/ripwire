@@ -44,7 +44,7 @@ claim cannot quietly drift. The row-by-row ledger is
 </details>
 
 **Languages:** Rust · C++ · Objective-C/C++ · C · Metal · CUDA · Python · Go · Swift · TypeScript ·
-JavaScript · Java · Ruby · PHP · Lua · Elixir · Gleam · Bash · C# · JSON · TOML · YAML · Markdown — see
+JavaScript · Java · Ruby · PHP · Lua · Elixir · Gleam · Zig · Bash · C# · JSON · TOML · YAML · Markdown — see
 [language support and limits](#languages).
 
 ### No API key. No embeddings. No index server. No daemon.
@@ -1797,9 +1797,9 @@ wrong, and it has. These are the results that say so, all in-tree, all published
 ### In the tests
 
 <details>
-<summary><b>559 gate scripts</b>, five contracts no unit test can hold, and the house rule: write the gate before the code it measures</summary>
+<summary><b>560 gate scripts</b>, five contracts no unit test can hold, and the house rule: write the gate before the code it measures</summary>
 
-`test/regression.sh` names **559 gate scripts** and is the authoritative list;
+`test/regression.sh` names **560 gate scripts** and is the authoritative list;
 `python3 test/pargates.py . ./build/ripwire -j 6` runs the same set in parallel. On top of them sit the
 contracts that do not fit a unit test: two runs byte-identical, warm output identical to cold, output
 that pipes clean through `xmllint --noout`, a sanitizer build with `-fno-sanitize-recover=all`, and a
@@ -1986,7 +1986,7 @@ are one contributor's corpus away from being measurably better, and we cannot se
 ## Languages
 
 <details>
-<summary><b>23</b> vendored grammars, and what each parser does and does not see — CUDA launch edges, PHP dynamic dispatch, Lua metatables</summary>
+<summary><b>24</b> vendored grammars, and what each parser does and does not see — CUDA launch edges, PHP dynamic dispatch, Lua metatables</summary>
 
 C, C++, Objective-C / Objective-C++, **Metal** (Metal Shading Language, `.metal` — indexed with the
 C++ grammar, since MSL is a C++14 dialect, so a dual-compile header's symbols resolve from both the
@@ -2005,7 +2005,9 @@ implied), **Elixir** (`.ex`/`.exs` — modules, protocols, protocol implementati
 literal ExUnit tests, local calls, remote calls and pipes; see the
 [static-analysis limits](docs/ARCHITECTURE.md#elixir-extraction)), **Gleam** (`.gleam` — functions,
 external-function declarations, custom types, type aliases, local and qualified calls, and pipelines;
-imports resolve exact module paths and narrow ambiguous same-name call targets), Bash, Go, Rust, Swift, C#,
+imports resolve exact module paths and narrow ambiguous same-name call targets), **Zig** (`.zig` — functions,
+tests, structs, enums, unions, error sets, local and qualified calls; literal `@import("file.zig")`
+paths resolve and narrow ambiguous same-name call targets), Bash, Go, Rust, Swift, C#,
 JSON + TOML + YAML (config keys — a
 `[tool.ruff.lint]` table is one symbol under its full dotted name, and
 `pyproject.toml`/`Cargo.toml`/CI workflows become greppable), and **Markdown** (`.md`/`.markdown` —

@@ -154,7 +154,7 @@ inline std::string lexicalNormalize( std::string_view path )
 // The import dialect a file's imports resolve in, keyed off its extension. C-family covers the quote
 // `#include`; Other (Swift/Java/C#/PHP/Markdown/…) never precise-resolves (deferred / no path in import).
 // Bash/Ruby/Lua/Elixir joined at kParserVer 81 — see their Step-As below.
-enum class IncludeLang : std::uint8_t { CFamily, Python, Ts, Rust, Go, Bash, Ruby, Lua, Elixir, Gleam, Other };
+enum class IncludeLang : std::uint8_t { CFamily, Python, Ts, Rust, Go, Bash, Ruby, Lua, Elixir, Gleam, Zig, Other };
 
 // extension → dialect, a declarative constexpr table (NOT a scattered if-chain). Extension includes the
 // leading dot; the classifier lowercases nothing (source extensions are lowercase by convention here).
@@ -181,6 +181,7 @@ inline IncludeLang includeLangOf( std::string_view path ) noexcept
         { ".lua", IncludeLang::Lua },
         { ".ex",  IncludeLang::Elixir },  { ".exs", IncludeLang::Elixir },
         { ".gleam", IncludeLang::Gleam },
+        { ".zig", IncludeLang::Zig },
         // B6.2: `.cs` has NO entry here — it falls through to IncludeLang::Other below, DEFERRED like
         // Java (also absent) and Swift/Go-single-root: a C# namespace does not map 1:1 onto a file (one
         // namespace spans many files, one file can hold several namespaces), so there is no sound
@@ -1672,6 +1673,7 @@ inline std::uint32_t resolvePreciseInclude( std::string_view includerPath, std::
         case IncludeLang::Lua:    return resolveLuaRequire(  includerPath, target, fileIndex, ws, includerFileId );
         case IncludeLang::Elixir: return resolveElixirModule( target, moduleIndex );
         case IncludeLang::Gleam:  return resolveGleamModule( includerPath, target, fileIndex, ws, includerFileId );
+        case IncludeLang::Zig:    return joinNormalizeLookup( includerDir( includerPath ), target, fileIndex, ws, includerFileId );
         case IncludeLang::Other:  return kNoFile;        // Swift (no path in import) → deferred
     }
     return kNoFile;
