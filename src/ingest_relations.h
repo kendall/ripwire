@@ -1411,7 +1411,9 @@ inline constexpr std::array<std::string_view, 34> kJsImportContainers = {
 // language has is DATA, and a language absent from the table simply has none.
 struct LangImportContainers { Lang lang; std::span<const std::string_view> nodes; };
 
-inline constexpr std::array<LangImportContainers, 9> kImportContainersByLang = { {
+inline constexpr std::array<std::string_view, 2> kZigImportContainers = { "variable_declaration", "builtin_function" };
+
+inline constexpr std::array<LangImportContainers, 10> kImportContainersByLang = { {
     { Lang::Python,     kPythonImportContainers },
     { Lang::Rust,       kRustImportContainers   },
     { Lang::CSharp,     kCsharpImportContainers },
@@ -1420,7 +1422,8 @@ inline constexpr std::array<LangImportContainers, 9> kImportContainersByLang = {
     { Lang::Bash,       kBashImportContainers   },
     { Lang::Lua,        kLuaImportContainers    },
     { Lang::Ruby,       kRubyImportContainers   },
-    { Lang::Elixir,     kElixirImportContainers }
+    { Lang::Elixir,     kElixirImportContainers },
+    { Lang::Zig,        kZigImportContainers    }
 } };
 
 inline bool isImportContainer( Lang lang, const char* type ) noexcept
@@ -1555,6 +1558,24 @@ DirectiveTarget directiveTargetOf( TSNode n, const char* t, std::string_view src
         if( const TSNode module = ts_node_child_by_field_name( n, "module", 6 ); !ts_node_is_null( module ) )
         {
             target = importSpecifierText( module, src );
+        }
+    }
+    else if( std::strcmp( t, "builtin_function" ) == 0 && lang == Lang::Zig )       // Zig `@import("path.zig")`
+    {
+        const std::uint32_t count = ts_node_named_child_count( n );
+        if( count == 2 )
+        {
+            const TSNode builtin = ts_node_named_child( n, 0 );
+            const TSNode args    = ts_node_named_child( n, 1 );
+            if( pattern::nodeText( builtin, src ) == "@import" && std::strcmp( ts_node_type( args ), "arguments" ) == 0
+                && ts_node_named_child_count( args ) == 1 )
+            {
+                const TSNode specifier = ts_node_named_child( args, 0 );
+                if( std::strcmp( ts_node_type( specifier ), "string" ) == 0 )
+                {
+                    target = importSpecifierText( specifier, src );
+                }
+            }
         }
     }
     else if( std::strcmp( t, "use_declaration" ) == 0 )                  // Rust `use crate::a::b;`

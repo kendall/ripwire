@@ -1687,6 +1687,12 @@ void captureTagsFacts( TSQueryCursor* cursor, const LangEntry& le, std::uint32_t
                 d.name = "test " + std::string( nameTxt.substr( 1, nameTxt.size() - 2 ) );
                 d.testScope = 1;
             }
+            else if( le.lang == Lang::Zig && std::strcmp( ts_node_type( roleNode ), "test_declaration" ) == 0
+                     && nameTxt.size() >= 2 && nameTxt.front() == '"' && nameTxt.back() == '"' )
+            {
+                d.name = "test " + std::string( nameTxt.substr( 1, nameTxt.size() - 2 ) );
+                d.testScope = 1;
+            }
             else if( le.lang == Lang::Elixir && !elixirImplName( roleNode, src ).empty() )
             {
                 // `defimpl P, for: T` — the @name capture is just the protocol alias, but the module Elixir

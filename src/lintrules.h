@@ -78,7 +78,7 @@ inline bool isValidSeverity( std::string_view s ) noexcept
 inline bool langFromToken( std::string_view tok, Lang& out ) noexcept
 {
     struct Row { std::string_view name; Lang lang; };
-    static constexpr std::array<Row, 17> kMap = { {
+    static constexpr std::array<Row, 18> kMap = { {
         { "cpp",        Lang::Cpp        },
         { "python",     Lang::Python     },
         { "typescript", Lang::TypeScript },
@@ -96,6 +96,7 @@ inline bool langFromToken( std::string_view tok, Lang& out ) noexcept
         { "lua",        Lang::Lua        },
         { "elixir",     Lang::Elixir     },
         { "gleam",      Lang::Gleam      },
+        { "zig",        Lang::Zig        },
     } };
     for( const Row& r : kMap )
     {
@@ -128,7 +129,7 @@ inline Lang langOfPath( std::string_view path ) noexcept
     }
 
     struct Row { std::string_view ext; Lang lang; };
-    static const std::array<Row, 33> kExt = { {
+    static const std::array<Row, 34> kExt = { {
         { ".cpp", Lang::Cpp }, { ".cc", Lang::Cpp }, { ".cxx", Lang::Cpp },
         { ".h", Lang::Cpp }, { ".hpp", Lang::Cpp }, { ".hh", Lang::Cpp }, { ".hxx", Lang::Cpp }, { ".c", Lang::C },
         { ".py", Lang::Python },
@@ -146,6 +147,7 @@ inline Lang langOfPath( std::string_view path ) noexcept
         { ".lua", Lang::Lua },
         { ".ex", Lang::Elixir }, { ".exs", Lang::Elixir },
         { ".gleam", Lang::Gleam },
+        { ".zig", Lang::Zig },
     } };
     for( const Row& r : kExt )
     {
@@ -208,7 +210,7 @@ inline bool dependencyCapable( Lang lang ) noexcept
         case Lang::Python: case Lang::TypeScript: case Lang::JavaScript:
         case Lang::Rust: case Lang::Go: case Lang::Swift:
         case Lang::Java: case Lang::CSharp: case Lang::Php:
-        case Lang::Bash: case Lang::Ruby: case Lang::Lua: case Lang::Elixir: case Lang::Gleam:
+        case Lang::Bash: case Lang::Ruby: case Lang::Lua: case Lang::Elixir: case Lang::Gleam: case Lang::Zig:
             return true;
         case Lang::Json: case Lang::Toml: case Lang::Yaml: case Lang::Markdown: case Lang::Unknown:
         default:
@@ -232,7 +234,7 @@ inline bool dependencyCapable( Lang lang ) noexcept
 // Step-A candidate lists are extension-closed), so each is its own group. Java/Go/Swift/C#/PHP keep a
 // group despite being DEFERRED in the resolver: capability is about the language, not about how far this
 // tool currently resolves it, and a deferred pair is honestly "could carry one, we found none".
-enum class DepDialect : std::uint8_t { None = 0, CFamily, Web, Python, Rust, Go, Swift, Java, CSharp, Php, Bash, Ruby, Lua, Elixir, Gleam };
+enum class DepDialect : std::uint8_t { None = 0, CFamily, Web, Python, Rust, Go, Swift, Java, CSharp, Php, Bash, Ruby, Lua, Elixir, Gleam, Zig };
 
 /// Return the dependency dialect of a language, or DepDialect::None when it carries no file dependency.
 inline DepDialect dependencyDialect( Lang lang ) noexcept
@@ -253,6 +255,7 @@ inline DepDialect dependencyDialect( Lang lang ) noexcept
         case Lang::Lua:                                 return DepDialect::Lua;
         case Lang::Elixir:                              return DepDialect::Elixir;
         case Lang::Gleam:                               return DepDialect::Gleam;
+        case Lang::Zig:                                 return DepDialect::Zig;
         case Lang::Json: case Lang::Toml: case Lang::Yaml: case Lang::Markdown: case Lang::Unknown:
         default:                                        return DepDialect::None;
     }

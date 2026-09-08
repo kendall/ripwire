@@ -112,7 +112,7 @@ reply = pathlib.Path(sys.argv[1])
 index = json.loads(next(reply.glob('index-*.json')).read_text())
 model = json.loads((reply / index['reply']['codemodel-v2']['jsonFile']).read_text())
 expected = {'ripwire_fuzz_' + name for name in
-            'cpp python go rust typescript tsx swift objc javascript bash java ruby json toml yaml csharp c php elixir gleam lua'.split()}
+            'cpp python go rust typescript tsx swift objc javascript bash java ruby json toml yaml csharp c php elixir gleam lua zig'.split()}
 assert model['configurations']
 for config in model['configurations']:
     targets = [json.loads((reply / t['jsonFile']).read_text()) for t in config['targets']]
@@ -120,7 +120,7 @@ for config in model['configurations']:
     assert actual == expected, (actual, expected)
 PY
     then
-        ok "configured model contains all 20 grammar fuzz executables"
+        ok "configured model contains all 21 grammar fuzz executables"
     else
         no "configured grammar fuzz executable set differs"
     fi
@@ -140,7 +140,7 @@ grep -q 'max_total_time=' "$RUNNER" && grep -q 'max_len=65536' "$RUNNER" && grep
     && ok "fuzz runner is time-, input-, and concurrency-bounded" || no "bounded fuzz runner contract missing"
 
 seedCount="$( find "$ROOT/test/fuzz/seeds" -mindepth 2 -maxdepth 2 -name valid | wc -l | tr -d ' ' )"
-[ "$seedCount" = 20 ] && ok "all 20 grammars have valid seeds" || no "expected 20 grammar seeds, found $seedCount"
+[ "$seedCount" = 21 ] && ok "all 21 grammars have valid seeds" || no "expected 21 grammar seeds, found $seedCount"
 
 [ "$fail" = 0 ] && printf 'ALL PASS\n' || printf 'FAILURES ABOVE\n'
 exit "$fail"
